@@ -1,6 +1,7 @@
 import './bootstrap.min.css';
 import './App.css';
 import EmotionTable from './EmotionTable.js';
+import SentimentTable from './SentimentTable.js';
 import React from 'react';
 
 class App extends React.Component {
@@ -38,29 +39,29 @@ class App extends React.Component {
     sendForSentimentAnalysis = () => {
         this.setState({ sentiment: true });
         let url = ".";
-        let value = "";
 
         if (this.state.mode === "url") {
-            value = "url value for sentiment is " + document.getElementById("textinput").value;
+            
             url = url + "/url/sentiment?url=" + document.getElementById("textinput").value;
         } else {
-            value = "text value for sentiment is " + document.getElementById("textinput").value;
+            
             url = url + "/text/sentiment?text=" + document.getElementById("textinput").value;
         }
         fetch(url).then((response) => {
             response.text().then((data) => {
                 this.setState({ sentimentOutput: data });
                 let res = JSON.parse(data);
-                let sentiment = res.result.keywords[0].sentiment;
-                let output;
-                if (sentiment.label === "positive") {
-                    output = <div style={{ color: "green", fontSize: 20 }}>{value}</div>
-                } else if (sentiment.label === "negative") {
-                    output = <div style={{ color: "red", fontSize: 20 }}>{value}</div>
+                let sentiments = res.result.keywords[0].sentiment;
+                let sentiment = Object.entries(sentiments);
+                let color;
+                if (sentiments.label === "positive") {
+                    color = "green";
+                } else if (sentiments.label === "negative") {
+                    color = "red";
                 } else {
-                    output = <div style={{ color: "yellow", fontSize: 20 }}>{value}</div>
+                    color = "yellow";
                 }
-                this.setState({ sentimentOutput: output });
+                this.setState({ sentimentOutput: <SentimentTable color={color} sentiments={sentiment} /> });
             })
         });
     }
