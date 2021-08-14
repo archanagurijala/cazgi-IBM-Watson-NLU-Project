@@ -1,4 +1,5 @@
 const express = require('express');
+const dotenv = require('dotenv');
 const app = new express();
 
 app.use(express.static('client'))
@@ -30,4 +31,19 @@ app.get("/text/sentiment", (req,res) => {
 let server = app.listen(8080, () => {
     console.log('Listening', server.address().port)
 })
+
+function getNLUInstance() {
+    const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1');
+    const { IamAuthenticator } = require('ibm-watson/auth');
+
+    const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
+    version: '2021-08-14',
+    authenticator: new IamAuthenticator({
+        apikey: '{apikey}',
+    }),
+    serviceUrl: '{url}',
+    });
+
+    return naturalLanguageUnderstanding;
+}
 
